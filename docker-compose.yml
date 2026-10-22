@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tahrir-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tahrir
+      POSTGRES_PASSWORD: tahrir
+      POSTGRES_DB: tahrir
+    ports:
+      - "5432:5432"
+    volumes:
+      - tahrir_pg:/var/lib/postgresql/data
+
+volumes:
+  tahrir_pg:

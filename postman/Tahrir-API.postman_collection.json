@@ -1,0 +1,607 @@
+{
+  "info": {
+    "name": "Tahrir API",
+    "description": "Tahrir frontend uchun barcha backend endpointlar. Avval Auth / Login (admin) ni ishga tushiring — token avtomatik saqlanadi.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "Public stats",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{baseUrl}}/stats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Yangi Foydalanuvchi\",\n  \"email\": \"yangi@tahrir.uz\",\n  \"password\": \"User1234!\",\n  \"confirmPassword\": \"User1234!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Login (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const token = json?.data?.token;",
+                  "if (token) pm.environment.set('token', token);",
+                  "const user = json?.data?.user;",
+                  "if (user?.id) pm.environment.set('userId', user.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@tahrir.uz\",\n  \"password\": \"Admin1234!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login (user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const token = json?.data?.token;",
+                  "if (token) pm.environment.set('token', token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@tahrir.uz\",\n  \"password\": \"User1234!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Me",
+          "request": { "method": "GET", "url": "{{baseUrl}}/auth/me" }
+        },
+        {
+          "name": "Forgot password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@tahrir.uz\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/forgot-password"
+          }
+        },
+        {
+          "name": "Reset password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"RESET_TOKEN\",\n  \"password\": \"User1234!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/reset-password"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "My profile", "request": { "method": "GET", "url": "{{baseUrl}}/users/me" } },
+        {
+          "name": "Update my profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Demo User Updated\"\n}" },
+            "url": "{{baseUrl}}/users/me"
+          }
+        },
+        {
+          "name": "List users (admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users?page=1&limit=10&search="
+          }
+        },
+        {
+          "name": "Create user (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Manager\",\n  \"email\": \"manager@tahrir.uz\",\n  \"password\": \"Manager123!\",\n  \"role\": \"manager\"\n}"
+            },
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        { "name": "Get user by id", "request": { "method": "GET", "url": "{{baseUrl}}/users/{{userId}}" } },
+        {
+          "name": "Update user (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"isActive\": true,\n  \"role\": \"user\"\n}" },
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        },
+        { "name": "Delete user (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/users/{{userId}}" } }
+      ]
+    },
+    {
+      "name": "Plans",
+      "item": [
+        {
+          "name": "List plans",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const first = Array.isArray(json.data) ? json.data[0] : null;",
+                  "if (first?.id) pm.environment.set('planId', first.id);"
+                ]
+              }
+            }
+          ],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/plans" }
+        },
+        { "name": "Get plan", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/plans/{{planId}}" } },
+        {
+          "name": "Create plan (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student\",\n  \"description\": \"Talabalar uchun\",\n  \"monthlyPrice\": 5,\n  \"features\": [\"50 ta hujjat / oy\"]\n}"
+            },
+            "url": "{{baseUrl}}/plans"
+          }
+        },
+        {
+          "name": "Update plan (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"isPopular\": true\n}" },
+            "url": "{{baseUrl}}/plans/{{planId}}"
+          }
+        },
+        { "name": "Delete plan (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/plans/{{planId}}" } }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "item": [
+        {
+          "name": "Subscribe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.id) pm.environment.set('subscriptionId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planId\": \"{{planId}}\",\n  \"billingPeriod\": \"monthly\"\n}"
+            },
+            "url": "{{baseUrl}}/subscriptions"
+          }
+        },
+        { "name": "My subscriptions", "request": { "method": "GET", "url": "{{baseUrl}}/subscriptions/me" } },
+        { "name": "Cancel subscription", "request": { "method": "PATCH", "url": "{{baseUrl}}/subscriptions/{{subscriptionId}}/cancel" } }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Create contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.id) pm.environment.set('contactId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Ali Valiyev\",\n  \"email\": \"ali@mail.uz\",\n  \"phone\": \"+998901234567\",\n  \"message\": \"Tahrir haqida savolim bor.\"\n}"
+            },
+            "url": "{{baseUrl}}/contact"
+          }
+        },
+        { "name": "List contacts (admin)", "request": { "method": "GET", "url": "{{baseUrl}}/contact?page=1&limit=10" } },
+        { "name": "Get contact", "request": { "method": "GET", "url": "{{baseUrl}}/contact/{{contactId}}" } },
+        {
+          "name": "Update contact status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"read\"\n}" },
+            "url": "{{baseUrl}}/contact/{{contactId}}"
+          }
+        },
+        { "name": "Delete contact", "request": { "method": "DELETE", "url": "{{baseUrl}}/contact/{{contactId}}" } }
+      ]
+    },
+    {
+      "name": "Newsletter",
+      "item": [
+        {
+          "name": "Subscribe",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"news@tahrir.uz\"\n}" },
+            "url": "{{baseUrl}}/newsletter"
+          }
+        },
+        { "name": "List subscribers (admin)", "request": { "method": "GET", "url": "{{baseUrl}}/newsletter" } }
+      ]
+    },
+    {
+      "name": "Blog",
+      "item": [
+        { "name": "Categories", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/blog/categories" } },
+        {
+          "name": "Create category (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Productivity\"\n}" },
+            "url": "{{baseUrl}}/blog/categories"
+          }
+        },
+        {
+          "name": "List posts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const first = Array.isArray(json.data) ? json.data[0] : null;",
+                  "if (first?.id) pm.environment.set('blogId', first.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{baseUrl}}/blog?page=1&limit=10&search=&category=All articles"
+          }
+        },
+        { "name": "Get post", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/blog/{{blogId}}" } },
+        {
+          "name": "Create post (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Yangi maqola\",\n  \"excerpt\": \"Qisqa matn\",\n  \"content\": \"To'liq matn\",\n  \"categoryId\": \"CATEGORY_UUID\",\n  \"isPublished\": true\n}"
+            },
+            "url": "{{baseUrl}}/blog"
+          }
+        },
+        {
+          "name": "Update post (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"isFeatured\": true\n}" },
+            "url": "{{baseUrl}}/blog/{{blogId}}"
+          }
+        },
+        { "name": "Delete post (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/blog/{{blogId}}" } }
+      ]
+    },
+    {
+      "name": "News",
+      "item": [
+        {
+          "name": "List news",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const first = Array.isArray(json.data) ? json.data[0] : null;",
+                  "if (first?.id) pm.environment.set('newsId', first.id);"
+                ]
+              }
+            }
+          ],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/news?page=1&limit=10" }
+        },
+        { "name": "Get news", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/news/{{newsId}}" } },
+        {
+          "name": "Create news (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Yangi e'lon\",\n  \"excerpt\": \"Qisqa\",\n  \"content\": \"To'liq yangilik\",\n  \"isPublished\": true\n}"
+            },
+            "url": "{{baseUrl}}/news"
+          }
+        },
+        {
+          "name": "Update news (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Yangilangan e'lon\"\n}" },
+            "url": "{{baseUrl}}/news/{{newsId}}"
+          }
+        },
+        { "name": "Delete news (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/news/{{newsId}}" } }
+      ]
+    },
+    {
+      "name": "FAQ",
+      "item": [
+        { "name": "Topics", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/faq/topics" } },
+        { "name": "List FAQ", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/faq?tab=popular&search=" } },
+        {
+          "name": "Create topic (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"slug\": \"security\",\n  \"label\": \"Xavfsizlik\",\n  \"icon\": \"shield\"\n}" },
+            "url": "{{baseUrl}}/faq/topics"
+          }
+        },
+        {
+          "name": "Create FAQ item (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Yangi savol?\",\n  \"answer\": \"Javob matni\",\n  \"tab\": \"popular\"\n}"
+            },
+            "url": "{{baseUrl}}/faq"
+          }
+        },
+        { "name": "Delete FAQ item (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/faq/{{faqId}}" } }
+      ]
+    },
+    {
+      "name": "Grammar",
+      "item": [
+        {
+          "name": "Check text",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Bizning kompaniya butun dunyo mijozlariga professional xizmat korsatadi.\"\n}"
+            },
+            "url": "{{baseUrl}}/grammar/check"
+          }
+        },
+        { "name": "Check history", "request": { "method": "GET", "url": "{{baseUrl}}/grammar/history" } },
+        {
+          "name": "Rewrite",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Loyiha biz uchun juda muhim edi va u bizga ko'p yangi narsalarni o'rganishga yordam berdi.\",\n  \"style\": \"formal\"\n}"
+            },
+            "url": "{{baseUrl}}/rewrite"
+          }
+        },
+        {
+          "name": "Analysis",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Bizning kompaniya butun dunyo mijozlariga professional xizmat korsatadi.\"\n}"
+            },
+            "url": "{{baseUrl}}/analysis"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload document",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": [] }
+              ]
+            },
+            "url": "{{baseUrl}}/documents"
+          }
+        },
+        { "name": "My documents", "request": { "method": "GET", "url": "{{baseUrl}}/documents" } },
+        { "name": "Get document", "request": { "method": "GET", "url": "{{baseUrl}}/documents/{{documentId}}" } },
+        { "name": "Download document", "request": { "method": "GET", "url": "{{baseUrl}}/documents/{{documentId}}/download" } },
+        { "name": "Delete document", "request": { "method": "DELETE", "url": "{{baseUrl}}/documents/{{documentId}}" } }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const first = Array.isArray(json.data) ? json.data[0] : null;",
+                  "if (first?.id) pm.environment.set('categoryId', first.id);"
+                ]
+              }
+            }
+          ],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/categories" }
+        },
+        { "name": "Get category", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/categories/{{categoryId}}" } },
+        {
+          "name": "Create category (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Yangi kategoriya\",\n  \"description\": \"Tavsif\"\n}" },
+            "url": "{{baseUrl}}/categories"
+          }
+        },
+        {
+          "name": "Update category (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Yangilangan kategoriya\"\n}" },
+            "url": "{{baseUrl}}/categories/{{categoryId}}"
+          }
+        },
+        { "name": "Delete category (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/categories/{{categoryId}}" } }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const first = Array.isArray(json.data) ? json.data[0] : null;",
+                  "if (first?.id) pm.environment.set('productId', first.id);"
+                ]
+              }
+            }
+          ],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/products?page=1&limit=10" }
+        },
+        { "name": "Search products", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/products/search?search=tahrir" } },
+        { "name": "Part search", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/products/part/search?search=pro" } },
+        { "name": "Get product", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/products/{{productId}}" } },
+        {
+          "name": "Create product (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tahrir Plus\",\n  \"description\": \"Kundalik yozuv\",\n  \"price\": 9,\n  \"sku\": \"TAHRIR-PLUS\",\n  \"categoryId\": \"{{categoryId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/products"
+          }
+        },
+        {
+          "name": "Update product (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 12\n}" },
+            "url": "{{baseUrl}}/products/{{productId}}"
+          }
+        },
+        { "name": "Delete product (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/products/{{productId}}" } }
+      ]
+    }
+  ]
+}
