@@ -13,13 +13,12 @@ describe('Health (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api');
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
     await app.init();
   });
 
-  it('/api/health (GET)', () => {
-    return request(app.getHttpServer()).get('/api/health').expect(200);
+  it('/health (GET)', () => {
+    return request(app.getHttpServer()).get('/health').expect(200);
   });
 
   afterEach(async () => {

@@ -1,11 +1,14 @@
 {
   "info": {
-    "name": "Tahrir API",
-    "description": "Tahrir frontend uchun barcha backend endpointlar. Avval Auth / Login (admin) ni ishga tushiring — token avtomatik saqlanadi.",
+    "name": "Tahrir Backend",
+    "description": "Tahrir sayti backend.\n\nQanday ishlaydi: frontend so'rov yuboradi, backend bazadan tekshiradi va javob qaytaradi.\n\nBase URL (oldida /api yo'q):\nhttps://tahrir-backend-production-524d.up.railway.app\n\nAvval Auth → Login (admin) ni yuboring. Token o'zi saqlanadi.\n\nDemo:\nadmin@tahrir.uz / Admin1234!\nuser@tahrir.uz / User1234!",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3000/api" }
+    {
+      "key": "baseUrl",
+      "value": "https://tahrir-backend-production-524d.up.railway.app"
+    }
   ],
   "auth": {
     "type": "bearer",
@@ -14,12 +17,14 @@
   "item": [
     {
       "name": "Health",
+      "description": "Server ishlayaptimi, shuni tekshiradi. Hech narsa saqlamaydi. Sayt ochilishidan oldin shu yerni bosib ko'ring.",
       "item": [
         {
           "name": "Health check",
           "request": {
             "auth": { "type": "noauth" },
             "method": "GET",
+            "description": "Backend tirikmi. Javob kelsa, server ishlayapti.",
             "url": "{{baseUrl}}/health"
           }
         },
@@ -28,6 +33,7 @@
           "request": {
             "auth": { "type": "noauth" },
             "method": "GET",
+            "description": "Bosh sahifadagi umumiy raqamlar.",
             "url": "{{baseUrl}}/stats"
           }
         }
@@ -35,6 +41,7 @@
     },
     {
       "name": "Auth",
+      "description": "Foydalanuvchini tanish.\n\nLogin — odam email va parol yozadi, backend bazadan tekshiradi. To'g'ri bo'lsa ruxsat (token) beradi.\nRegister — yangi odamni bazaga yozadi.\nMe — hozir kim kirdi, shuni aytadi.\nParolni unutdim — yangi parol qo'yish yo'li.",
       "item": [
         {
           "name": "Register",
@@ -42,6 +49,7 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangi hisob ochadi. Ism, email, parol yoziladi. Email band bo'lsa, ochilmaydi. Ochilsa token beriladi.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"fullName\": \"Yangi Foydalanuvchi\",\n  \"email\": \"yangi@tahrir.uz\",\n  \"password\": \"User1234!\",\n  \"confirmPassword\": \"User1234!\"\n}"
@@ -70,6 +78,7 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Foydalanuvchini tekshirish. Email va parol kiritiladi. To'g'ri bo'lsa token beriladi. Shu so'rovni birinchi yuboring — token avtomatik saqlanadi.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"admin@tahrir.uz\",\n  \"password\": \"Admin1234!\"\n}"
@@ -96,6 +105,7 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Oddiy foydalanuvchi sifatida kirish. Ham email va parol kiritiladi.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"user@tahrir.uz\",\n  \"password\": \"User1234!\"\n}"
@@ -105,7 +115,11 @@
         },
         {
           "name": "Me",
-          "request": { "method": "GET", "url": "{{baseUrl}}/auth/me" }
+          "request": {
+            "method": "GET",
+            "description": "Hozir kim kirdi. Token bo'lsa, ism, email, rolini qaytaradi.",
+            "url": "{{baseUrl}}/auth/me"
+          }
         },
         {
           "name": "Forgot password",
@@ -113,6 +127,7 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Parolni unutgan odam email yozadi. Backend tiklash yo'lini beradi.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"user@tahrir.uz\"\n}"
@@ -126,6 +141,7 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangi parol qo'yadi. Token va yangi parol kerak.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"token\": \"RESET_TOKEN\",\n  \"password\": \"User1234!\"\n}"
@@ -137,13 +153,22 @@
     },
     {
       "name": "Users",
+      "description": "Foydalanuvchilar.\n\nOddiy odam faqat o'z ismini yoki parolini o'zgartiradi.\nAdmin hamma userlarni ko'radi, yangi odam qo'shadi, rolini o'zgartiradi yoki o'chiradi.",
       "item": [
-        { "name": "My profile", "request": { "method": "GET", "url": "{{baseUrl}}/users/me" } },
+        {
+          "name": "My profile",
+          "request": {
+            "method": "GET",
+            "description": "O'z profilini olish.",
+            "url": "{{baseUrl}}/users/me"
+          }
+        },
         {
           "name": "Update my profile",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "O'z ismini yoki parolini yangilash.",
             "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Demo User Updated\"\n}" },
             "url": "{{baseUrl}}/users/me"
           }
@@ -152,6 +177,7 @@
           "name": "List users (admin)",
           "request": {
             "method": "GET",
+            "description": "Barcha foydalanuvchilar. Faqat admin.",
             "url": "{{baseUrl}}/users?page=1&limit=10&search="
           }
         },
@@ -160,6 +186,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Admin yangi odam qo'shadi.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"fullName\": \"Manager\",\n  \"email\": \"manager@tahrir.uz\",\n  \"password\": \"Manager123!\",\n  \"role\": \"manager\"\n}"
@@ -167,21 +194,37 @@
             "url": "{{baseUrl}}/users"
           }
         },
-        { "name": "Get user by id", "request": { "method": "GET", "url": "{{baseUrl}}/users/{{userId}}" } },
+        {
+          "name": "Get user by id",
+          "request": {
+            "method": "GET",
+            "description": "Bitta foydalanuvchini ko'rish. Admin.",
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        },
         {
           "name": "Update user (admin)",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Rolini yoki faolligini o'zgartirish.",
             "body": { "mode": "raw", "raw": "{\n  \"isActive\": true,\n  \"role\": \"user\"\n}" },
             "url": "{{baseUrl}}/users/{{userId}}"
           }
         },
-        { "name": "Delete user (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/users/{{userId}}" } }
+        {
+          "name": "Delete user (admin)",
+          "request": {
+            "method": "DELETE",
+            "description": "Foydalanuvchini o'chirish. Admin.",
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        }
       ]
     },
     {
       "name": "Plans",
+      "description": "Saytdagi tariflar: Free, Plus, Pro, Team.\n\nFrontend \"qanday tariflar bor?\" deb so'raydi, backend narx, imkoniyatlar va tugma matnini qaytaradi. Pricing sahifasi shu yerdan to'ladi.",
       "item": [
         {
           "name": "List plans",
@@ -198,14 +241,28 @@
               }
             }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/plans" }
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Barcha tariflar ro'yxati. Login shart emas.",
+            "url": "{{baseUrl}}/plans"
+          }
         },
-        { "name": "Get plan", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/plans/{{planId}}" } },
+        {
+          "name": "Get plan",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Bitta tarifni ko'rish.",
+            "url": "{{baseUrl}}/plans/{{planId}}"
+          }
+        },
         {
           "name": "Create plan (admin)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangi tarif qo'shish. Admin.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Student\",\n  \"description\": \"Talabalar uchun\",\n  \"monthlyPrice\": 5,\n  \"features\": [\"50 ta hujjat / oy\"]\n}"
@@ -218,15 +275,24 @@
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Tarifni o'zgartirish. Admin.",
             "body": { "mode": "raw", "raw": "{\n  \"isPopular\": true\n}" },
             "url": "{{baseUrl}}/plans/{{planId}}"
           }
         },
-        { "name": "Delete plan (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/plans/{{planId}}" } }
+        {
+          "name": "Delete plan (admin)",
+          "request": {
+            "method": "DELETE",
+            "description": "Tarifni o'chirish. Admin.",
+            "url": "{{baseUrl}}/plans/{{planId}}"
+          }
+        }
       ]
     },
     {
       "name": "Subscriptions",
+      "description": "Obuna. Foydalanuvchi tarif tanlaydi, backend \"shu odam endi Plus/Pro da\" deb yozib qo'yadi. Bekor qilsa, obuna to'xtaydi. Buning uchun avval login kerak.",
       "item": [
         {
           "name": "Subscribe",
@@ -245,6 +311,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Tarifni tanlash. planId va oylik/yillik yoziladi.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"planId\": \"{{planId}}\",\n  \"billingPeriod\": \"monthly\"\n}"
@@ -252,12 +319,27 @@
             "url": "{{baseUrl}}/subscriptions"
           }
         },
-        { "name": "My subscriptions", "request": { "method": "GET", "url": "{{baseUrl}}/subscriptions/me" } },
-        { "name": "Cancel subscription", "request": { "method": "PATCH", "url": "{{baseUrl}}/subscriptions/{{subscriptionId}}/cancel" } }
+        {
+          "name": "My subscriptions",
+          "request": {
+            "method": "GET",
+            "description": "Mening obunalarim.",
+            "url": "{{baseUrl}}/subscriptions/me"
+          }
+        },
+        {
+          "name": "Cancel subscription",
+          "request": {
+            "method": "PATCH",
+            "description": "Obunani bekor qilish.",
+            "url": "{{baseUrl}}/subscriptions/{{subscriptionId}}/cancel"
+          }
+        }
       ]
     },
     {
       "name": "Contact",
+      "description": "Aloqa formasi. Odam ism, email, xabar yozadi. Backend shu murojaatni bazaga tashlaydi. Admin keyin o'qiydi, \"o'qildi / javob berildi\" deb belgilaydi. Yuborish uchun login shart emas.",
       "item": [
         {
           "name": "Create contact",
@@ -277,6 +359,7 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Murojaat yuborish. Contact sahifasi shu.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"fullName\": \"Ali Valiyev\",\n  \"email\": \"ali@mail.uz\",\n  \"phone\": \"+998901234567\",\n  \"message\": \"Tahrir haqida savolim bor.\"\n}"
@@ -284,22 +367,45 @@
             "url": "{{baseUrl}}/contact"
           }
         },
-        { "name": "List contacts (admin)", "request": { "method": "GET", "url": "{{baseUrl}}/contact?page=1&limit=10" } },
-        { "name": "Get contact", "request": { "method": "GET", "url": "{{baseUrl}}/contact/{{contactId}}" } },
+        {
+          "name": "List contacts (admin)",
+          "request": {
+            "method": "GET",
+            "description": "Kelgan barcha xabarlar. Admin/manager.",
+            "url": "{{baseUrl}}/contact?page=1&limit=10"
+          }
+        },
+        {
+          "name": "Get contact",
+          "request": {
+            "method": "GET",
+            "description": "Bitta murojaatni o'qish.",
+            "url": "{{baseUrl}}/contact/{{contactId}}"
+          }
+        },
         {
           "name": "Update contact status",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Holatni o'zgartirish: new, read, replied.",
             "body": { "mode": "raw", "raw": "{\n  \"status\": \"read\"\n}" },
             "url": "{{baseUrl}}/contact/{{contactId}}"
           }
         },
-        { "name": "Delete contact", "request": { "method": "DELETE", "url": "{{baseUrl}}/contact/{{contactId}}" } }
+        {
+          "name": "Delete contact",
+          "request": {
+            "method": "DELETE",
+            "description": "Murojaatni o'chirish. Admin.",
+            "url": "{{baseUrl}}/contact/{{contactId}}"
+          }
+        }
       ]
     },
     {
       "name": "Newsletter",
+      "description": "Footer dagi email. Odam \"yangilik yuboring\" deb email yozadi, backend shu emailni ro'yxatga qo'shadi.",
       "item": [
         {
           "name": "Subscribe",
@@ -307,22 +413,40 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Emailni yangiliklar ro'yxatiga qo'shish.",
             "body": { "mode": "raw", "raw": "{\n  \"email\": \"news@tahrir.uz\"\n}" },
             "url": "{{baseUrl}}/newsletter"
           }
         },
-        { "name": "List subscribers (admin)", "request": { "method": "GET", "url": "{{baseUrl}}/newsletter" } }
+        {
+          "name": "List subscribers (admin)",
+          "request": {
+            "method": "GET",
+            "description": "Obuna bo'lgan emaillar. Admin.",
+            "url": "{{baseUrl}}/newsletter"
+          }
+        }
       ]
     },
     {
       "name": "Blog",
+      "description": "Blog sahifasi. Maqolalar shu yerda. Frontend maqolalarni so'raydi, backend sarlavha, matn, kategoriya, sanani qaytaradi. Qidiruv va kategoriya filtri ham shu. Admin yangi maqola yozadi.",
       "item": [
-        { "name": "Categories", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/blog/categories" } },
+        {
+          "name": "Categories",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Blog kategoriyalari: Writing tips, Grammar va hokazo.",
+            "url": "{{baseUrl}}/blog/categories"
+          }
+        },
         {
           "name": "Create category (admin)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangi kategoriya. Admin.",
             "body": { "mode": "raw", "raw": "{\n  \"name\": \"Productivity\"\n}" },
             "url": "{{baseUrl}}/blog/categories"
           }
@@ -345,15 +469,25 @@
           "request": {
             "auth": { "type": "noauth" },
             "method": "GET",
+            "description": "Maqolalar ro'yxati. search va category bilan filterlash mumkin.",
             "url": "{{baseUrl}}/blog?page=1&limit=10&search=&category=All articles"
           }
         },
-        { "name": "Get post", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/blog/{{blogId}}" } },
+        {
+          "name": "Get post",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Bitta maqolani ochish.",
+            "url": "{{baseUrl}}/blog/{{blogId}}"
+          }
+        },
         {
           "name": "Create post (admin)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangi maqola yozish. Admin. categoryId ni kategoriyalar ro'yxatidan oling.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"Yangi maqola\",\n  \"excerpt\": \"Qisqa matn\",\n  \"content\": \"To'liq matn\",\n  \"categoryId\": \"CATEGORY_UUID\",\n  \"isPublished\": true\n}"
@@ -366,15 +500,24 @@
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Maqolani tahrirlash.",
             "body": { "mode": "raw", "raw": "{\n  \"isFeatured\": true\n}" },
             "url": "{{baseUrl}}/blog/{{blogId}}"
           }
         },
-        { "name": "Delete post (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/blog/{{blogId}}" } }
+        {
+          "name": "Delete post (admin)",
+          "request": {
+            "method": "DELETE",
+            "description": "Maqolani o'chirish. Admin.",
+            "url": "{{baseUrl}}/blog/{{blogId}}"
+          }
+        }
       ]
     },
     {
       "name": "News",
+      "description": "Yangiliklar sahifasi. Blogga o'xshaydi, lekin yangiliklar uchun. News sahifasi shu yerdan to'ladi.",
       "item": [
         {
           "name": "List news",
@@ -391,14 +534,28 @@
               }
             }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/news?page=1&limit=10" }
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Yangiliklar ro'yxati.",
+            "url": "{{baseUrl}}/news?page=1&limit=10"
+          }
         },
-        { "name": "Get news", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/news/{{newsId}}" } },
+        {
+          "name": "Get news",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Bitta yangilikni ochish.",
+            "url": "{{baseUrl}}/news/{{newsId}}"
+          }
+        },
         {
           "name": "Create news (admin)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangi yangilik. Admin.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"Yangi e'lon\",\n  \"excerpt\": \"Qisqa\",\n  \"content\": \"To'liq yangilik\",\n  \"isPublished\": true\n}"
@@ -411,24 +568,53 @@
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangilikni tahrirlash.",
             "body": { "mode": "raw", "raw": "{\n  \"title\": \"Yangilangan e'lon\"\n}" },
             "url": "{{baseUrl}}/news/{{newsId}}"
           }
         },
-        { "name": "Delete news (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/news/{{newsId}}" } }
+        {
+          "name": "Delete news (admin)",
+          "request": {
+            "method": "DELETE",
+            "description": "Yangilikni o'chirish. Admin.",
+            "url": "{{baseUrl}}/news/{{newsId}}"
+          }
+        }
       ]
     },
     {
       "name": "FAQ",
+      "description": "Ko'p so'raladigan savollar. Help sahifasi shu. Frontend savol-javoblarni so'raydi, backend qaytaradi. Qidiruv ham ishlaydi. Admin yangi savol qo'shishi mumkin.",
       "item": [
-        { "name": "Topics", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/faq/topics" } },
-        { "name": "List FAQ", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/faq?tab=popular&search=" } },
+        {
+          "name": "Topics",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Mavzular: Boshlash, Hujjatlar, Tariflar...",
+            "url": "{{baseUrl}}/faq/topics"
+          }
+        },
+        {
+          "name": "List FAQ",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Savol-javoblar. tab: popular, guides, trouble. search bilan qidirish mumkin.",
+            "url": "{{baseUrl}}/faq?tab=popular&search="
+          }
+        },
         {
           "name": "Create topic (admin)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"slug\": \"security\",\n  \"label\": \"Xavfsizlik\",\n  \"icon\": \"shield\"\n}" },
+            "description": "Yangi mavzu. Admin.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"security\",\n  \"label\": \"Xavfsizlik\",\n  \"icon\": \"shield\"\n}"
+            },
             "url": "{{baseUrl}}/faq/topics"
           }
         },
@@ -437,6 +623,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangi savol-javob. Admin.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"question\": \"Yangi savol?\",\n  \"answer\": \"Javob matni\",\n  \"tab\": \"popular\"\n}"
@@ -444,11 +631,19 @@
             "url": "{{baseUrl}}/faq"
           }
         },
-        { "name": "Delete FAQ item (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/faq/{{faqId}}" } }
+        {
+          "name": "Delete FAQ item (admin)",
+          "request": {
+            "method": "DELETE",
+            "description": "Savolni o'chirish. Admin.",
+            "url": "{{baseUrl}}/faq/{{faqId}}"
+          }
+        }
       ]
     },
     {
       "name": "Grammar",
+      "description": "Matn bilan ishlash.\n\nTekshiruv — odam matn yozadi, backend xatolarni topadi (noto'g'ri so'z, bo'shliq, tinish belgilari) va \"shu yerni shunday tuzat\" deb qaytaradi.\nQayta yozish — matnni soddaroq, rasmiyroq yoki qisqaroq qiladi.\nTahlil — grammatika, ravshanlik, ohang qanday, shuni aytadi.",
       "item": [
         {
           "name": "Check text",
@@ -456,6 +651,7 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Matnni tekshirish. Editor dagi qizil chiziqlar shu javobdan chiziladi. Login shart emas.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"text\": \"Bizning kompaniya butun dunyo mijozlariga professional xizmat korsatadi.\"\n}"
@@ -463,13 +659,21 @@
             "url": "{{baseUrl}}/grammar/check"
           }
         },
-        { "name": "Check history", "request": { "method": "GET", "url": "{{baseUrl}}/grammar/history" } },
+        {
+          "name": "Check history",
+          "request": {
+            "method": "GET",
+            "description": "Oldin tekshirilgan matnlar. Login kerak.",
+            "url": "{{baseUrl}}/grammar/history"
+          }
+        },
         {
           "name": "Rewrite",
           "request": {
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Matnni qayta yozish. style: simpler, formal, shorter, detailed.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"text\": \"Loyiha biz uchun juda muhim edi va u bizga ko'p yangi narsalarni o'rganishga yordam berdi.\",\n  \"style\": \"formal\"\n}"
@@ -483,6 +687,7 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Matn tahlili: grammatika, ravshanlik, ohang. Opportunities dagi statistika shu.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"text\": \"Bizning kompaniya butun dunyo mijozlariga professional xizmat korsatadi.\"\n}"
@@ -494,28 +699,57 @@
     },
     {
       "name": "Documents",
+      "description": "Hujjatlar. Foydalanuvchi PDF, Word kabi fayl yuklaydi. Backend faylni saqlaydi. Keyin ro'yxatini ko'rsatadi, yuklab olish yoki o'chirish mumkin. Avval login bo'lishi kerak. Yuklashda maydon nomi: file.",
       "item": [
         {
           "name": "Upload document",
           "request": {
             "method": "POST",
+            "description": "Fayl yuklash. Body da form-data, kalit nomi file. O'ngdan fayl tanlang.",
             "body": {
               "mode": "formdata",
-              "formdata": [
-                { "key": "file", "type": "file", "src": [] }
-              ]
+              "formdata": [{ "key": "file", "type": "file", "src": [] }]
             },
             "url": "{{baseUrl}}/documents"
           }
         },
-        { "name": "My documents", "request": { "method": "GET", "url": "{{baseUrl}}/documents" } },
-        { "name": "Get document", "request": { "method": "GET", "url": "{{baseUrl}}/documents/{{documentId}}" } },
-        { "name": "Download document", "request": { "method": "GET", "url": "{{baseUrl}}/documents/{{documentId}}/download" } },
-        { "name": "Delete document", "request": { "method": "DELETE", "url": "{{baseUrl}}/documents/{{documentId}}" } }
+        {
+          "name": "My documents",
+          "request": {
+            "method": "GET",
+            "description": "Mening yuklagan fayllarim.",
+            "url": "{{baseUrl}}/documents"
+          }
+        },
+        {
+          "name": "Get document",
+          "request": {
+            "method": "GET",
+            "description": "Bitta hujjat ma'lumoti.",
+            "url": "{{baseUrl}}/documents/{{documentId}}"
+          }
+        },
+        {
+          "name": "Download document",
+          "request": {
+            "method": "GET",
+            "description": "Faylni yuklab olish. Bu JSON emas, fayl o'zi keladi.",
+            "url": "{{baseUrl}}/documents/{{documentId}}/download"
+          }
+        },
+        {
+          "name": "Delete document",
+          "request": {
+            "method": "DELETE",
+            "description": "Hujjatni o'chirish.",
+            "url": "{{baseUrl}}/documents/{{documentId}}"
+          }
+        }
       ]
     },
     {
       "name": "Categories",
+      "description": "Mahsulot kategoriyalari. Tahrir saytining asosiy ishi bu emas, lekin frontendda shu so'rovlar bo'lgani uchun bor. Ro'yxat, qo'shish, o'zgartirish, o'chirish.",
       "item": [
         {
           "name": "List categories",
@@ -532,15 +766,32 @@
               }
             }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/categories" }
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Kategoriyalar ro'yxati.",
+            "url": "{{baseUrl}}/categories"
+          }
         },
-        { "name": "Get category", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/categories/{{categoryId}}" } },
+        {
+          "name": "Get category",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Bitta kategoriya.",
+            "url": "{{baseUrl}}/categories/{{categoryId}}"
+          }
+        },
         {
           "name": "Create category (admin)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Yangi kategoriya\",\n  \"description\": \"Tavsif\"\n}" },
+            "description": "Yangi kategoriya. Admin.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Yangi kategoriya\",\n  \"description\": \"Tavsif\"\n}"
+            },
             "url": "{{baseUrl}}/categories"
           }
         },
@@ -549,15 +800,24 @@
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Kategoriyani o'zgartirish.",
             "body": { "mode": "raw", "raw": "{\n  \"name\": \"Yangilangan kategoriya\"\n}" },
             "url": "{{baseUrl}}/categories/{{categoryId}}"
           }
         },
-        { "name": "Delete category (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/categories/{{categoryId}}" } }
+        {
+          "name": "Delete category (admin)",
+          "request": {
+            "method": "DELETE",
+            "description": "Kategoriyani o'chirish. Admin.",
+            "url": "{{baseUrl}}/categories/{{categoryId}}"
+          }
+        }
       ]
     },
     {
       "name": "Products",
+      "description": "Mahsulotlar. Ro'yxat, qidiruv, bitta mahsulotni ochish. Yozish va o'chirish adminniki. Asosiy Tahrir sahifalari bularsiz ham ishlaydi.",
       "item": [
         {
           "name": "List products",
@@ -574,16 +834,46 @@
               }
             }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/products?page=1&limit=10" }
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Mahsulotlar ro'yxati.",
+            "url": "{{baseUrl}}/products?page=1&limit=10"
+          }
         },
-        { "name": "Search products", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/products/search?search=tahrir" } },
-        { "name": "Part search", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/products/part/search?search=pro" } },
-        { "name": "Get product", "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/products/{{productId}}" } },
+        {
+          "name": "Search products",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Mahsulot qidirish.",
+            "url": "{{baseUrl}}/products/search?search=tahrir"
+          }
+        },
+        {
+          "name": "Part search",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Qisman qidiruv.",
+            "url": "{{baseUrl}}/products/part/search?search=pro"
+          }
+        },
+        {
+          "name": "Get product",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "description": "Bitta mahsulot.",
+            "url": "{{baseUrl}}/products/{{productId}}"
+          }
+        },
         {
           "name": "Create product (admin)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Yangi mahsulot. Admin.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Tahrir Plus\",\n  \"description\": \"Kundalik yozuv\",\n  \"price\": 9,\n  \"sku\": \"TAHRIR-PLUS\",\n  \"categoryId\": \"{{categoryId}}\"\n}"
@@ -596,11 +886,19 @@
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "description": "Mahsulotni o'zgartirish.",
             "body": { "mode": "raw", "raw": "{\n  \"price\": 12\n}" },
             "url": "{{baseUrl}}/products/{{productId}}"
           }
         },
-        { "name": "Delete product (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/products/{{productId}}" } }
+        {
+          "name": "Delete product (admin)",
+          "request": {
+            "method": "DELETE",
+            "description": "Mahsulotni o'chirish. Admin.",
+            "url": "{{baseUrl}}/products/{{productId}}"
+          }
+        }
       ]
     }
   ]

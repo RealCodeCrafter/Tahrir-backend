@@ -10,7 +10,7 @@ import { Observable, map } from 'rxjs';
 export class TransformInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const request = context.switchToHttp().getRequest<{ url?: string }>();
-    if (request.url?.startsWith('/api/documents/') && request.url.includes('/download')) {
+    if (request.url?.includes('/documents/') && request.url.includes('/download')) {
       return next.handle();
     }
 
